@@ -273,6 +273,7 @@ void QSigner::run()
 			return;
 		}
 
+		qCDebug(SLog) << "Polling cards";
 		if(QCardLock::instance().readTryLock())
 		{
 			TokenData aold = d->auth, at = aold;
@@ -320,6 +321,9 @@ void QSigner::run()
 			st.setCards( scards );
 			st.setReaders( readers );
 
+			qCDebug(SLog) << "Readers:" << readers;
+			qCDebug(SLog) << "Auth cards:" << acards << "Singing cards:" << scards;
+
 			// check if selected card is still in slot
 			if( !at.card().isEmpty() && !acards.contains( at.card() ) )
 			{
@@ -345,6 +349,7 @@ void QSigner::run()
 
 			if( acards.contains( at.card() ) && at.cert().isNull() ) // read auth cert
 			{
+				qCDebug(SLog) << "Read auth cert" << at.card();
 #ifdef Q_OS_WIN
 				if(d->win)
 				{

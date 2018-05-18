@@ -755,6 +755,26 @@ QWidget* Application::mainWindow()
 	return root;
 }
 
+#ifndef Q_OS_MAC
+void Application::migrateDD3Settings(Settings &settings)
+{
+	Settings dd3Settings("qdigidocclient");
+	bool updateProxy = false;
+	QSet<QString> migrated = QSet<QString>({"type", "Main/Language",});
+	for(const QString &key : dd3Settings.allKeys().toSet())
+	{
+		if(!key.startsWith("Client/") && !migrated.contains(key))
+			continue;
+		settings.setValue(key, dd3Settings.value(key));
+		if(key.startsWith("Client/Proxy"))
+			updateProxy = true;
+	}
+
+	if(updateProxy)
+		SettingsDialog::loadProxy(digidoc::Conf::instance());
+}
+#endif // Q_OS_MAC
+
 bool Application::notify( QObject *o, QEvent *e )
 {
 	try
@@ -872,7 +892,11 @@ void Application::showClient(const QStringList &params, bool crypto)
 	if( !w )
 	{
 		Settings settings;
-		if( settings.value("showIntro", true).toBool() )
+#ifndef Q_OS_MAC
+		if(!settings.contains("showIntro"))
+			migrateDD3Settings(settings);
+#endif // !Q_OS_MAC
+		if(settings.value("showIntro", true).toBool())
 		{
 			FirstRun dlg;
 			connect(&dlg, &FirstRun::langChanged, this,

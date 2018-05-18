@@ -34,6 +34,9 @@ namespace digidoc { class Exception; }
 class QAction;
 class QSmartCard;
 class QSigner;
+#ifndef Q_OS_MAC
+class Settings;
+#endif
 class ApplicationPrivate;
 class Application: public Common
 {
@@ -101,6 +104,9 @@ private:
 	void diagnostics(QTextStream &s) override;
 	bool event( QEvent *e ) override;
 	QWidget* mainWindow();
+#ifndef Q_OS_MAC
+	void migrateDD3Settings(Settings &settings);
+#endif
 	static void showWarning(const QString &msg, const digidoc::Exception &e);
 	QWidget* uniqueRoot();
 

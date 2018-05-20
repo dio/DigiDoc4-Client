@@ -256,7 +256,7 @@ public:
 	MacMenuBar	*bar = nullptr;
 	QSigner		*signer = nullptr;
 
-	QTranslator	appTranslator, commonTranslator, cryptoTranslator, qtTranslator;
+	QTranslator	appTranslator, commonTranslator, qtTranslator;
 	QString		lang;
 	QTimer		lastWindowTimer;
 	volatile bool ready = false;
@@ -287,7 +287,6 @@ Application::Application( int &argc, char **argv )
 
 	installTranslator( &d->appTranslator );
 	installTranslator( &d->commonTranslator );
-	installTranslator( &d->cryptoTranslator );
 	installTranslator( &d->qtTranslator );
 	loadTranslation( Settings::language() );
 
@@ -603,7 +602,6 @@ void Application::loadTranslation( const QString &lang )
 
 	d->appTranslator.load( ":/translations/" + lang );
 	d->commonTranslator.load( ":/translations/common_" + lang );
-	d->cryptoTranslator.load( ":/translations/crypto_" + lang );
 	d->qtTranslator.load( ":/translations/qt_" + lang );
 	if( d->closeAction ) d->closeAction->setText( tr("Close window") );
 	if( d->newClientAction ) d->newClientAction->setText( tr("New Client window") );
@@ -756,22 +754,17 @@ QWidget* Application::mainWindow()
 }
 
 #ifndef Q_OS_MAC
-void Application::migrateDD3Settings(Settings &settings)
+void Application::migrateSettings()
 {
 	Settings dd3Settings("qdigidocclient");
-	bool updateProxy = false;
-	QSet<QString> migrated = QSet<QString>({"type", "Main/Language",});
-	for(const QString &key : dd3Settings.allKeys().toSet())
+	Settings settings(qApp->applicationName());
+	if(dd3Settings.contains("type"))
+		settings.setValue("Client/Type", dd3Settings.value(key));
+	if(dd3Settings.contains("Client/proxyConfig"))
 	{
-		if(!key.startsWith("Client/") && !migrated.contains(key))
-			continue;
 		settings.setValue(key, dd3Settings.value(key));
-		if(key.startsWith("Client/Proxy"))
-			updateProxy = true;
-	}
-
-	if(updateProxy)
 		SettingsDialog::loadProxy(digidoc::Conf::instance());
+	}
 }
 #endif // Q_OS_MAC
 
@@ -894,7 +887,7 @@ void Application::showClient(const QStringList &params, bool crypto)
 		Settings settings;
 #ifndef Q_OS_MAC
 		if(!settings.contains("showIntro"))
-			migrateDD3Settings(settings);
+			migrateSettings();
 #endif // !Q_OS_MAC
 		if(settings.value("showIntro", true).toBool())
 		{

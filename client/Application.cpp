@@ -758,9 +758,11 @@ void Application::migrateSettings()
 {
 	Settings dd3Settings("qdigidocclient");
 	Settings settings(qApp->applicationName());
-	if(dd3Settings.contains("type"))
+	QString key = "type";
+	if(dd3Settings.contains(key))
 		settings.setValue("Client/Type", dd3Settings.value(key));
-	if(dd3Settings.contains("Client/proxyConfig"))
+	key = "Client/proxyConfig";
+	if(dd3Settings.contains(key))
 	{
 		settings.setValue(key, dd3Settings.value(key));
 		SettingsDialog::loadProxy(digidoc::Conf::instance());

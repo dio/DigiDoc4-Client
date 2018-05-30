@@ -199,6 +199,7 @@ msiexec /a Eesti_ID_kaart-CPP-teek-arendajale-3.10.0.3672.BETA.msi /qn TARGETDIR
       <ComponentRef Id='ProgramMenuDir' />
       <ComponentRef Id="DesktopShortcut" />
       <ComponentRef Id="Application"/>
+      <ComponentRef Id="Dependencies"/>
       <ComponentGroupRef Id="Schemas"/>
 <?ifdef var.certsLocation ?>
       <ComponentGroupRef Id="Certs"/>

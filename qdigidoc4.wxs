@@ -127,6 +127,9 @@ msiexec /a Eesti_ID_kaart-CPP-teek-arendajale-3.10.0.3672.BETA.msi /qn TARGETDIR
                 <Verb Id="open" TargetFile="qdigidoc4.exe" Command="Open" Argument='"%1"' />
               </Extension>
             </ProgId>
+          </Component>
+          <!-- libdigidocpp dependencies are separated into a component that is shared by qdigidoc -->
+          <Component Id="Dependencies" Guid="810cbd57-b24d-49ee-939a-a1fc38dda46f">
             <File Source="$(var.libs_path)\zlib1.dll"/>
             <File Source="$(var.libs_path)\xerces-c_3_2.dll"/>
 <?ifdef var.xalan ?>
